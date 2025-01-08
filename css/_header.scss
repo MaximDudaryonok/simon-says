@@ -1,0 +1,72 @@
+.header {
+  width: 100%;
+  padding-top: 2%;
+  display: flex;
+  justify-content: space-around;
+
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header__logo {
+  display: flex;
+}
+
+.header__logo-img {
+  max-width: 300px;
+  max-height: 180px;
+}
+
+.header__menu {
+  display: flex;
+  gap: 5%;
+}
+
+.button {
+  border: none;
+  background-color: $button-gold;
+  color: white;
+  border-radius: clamp(5px, 3vw, 30px);
+  width: clamp(50px, 20vw, 200px);
+  height: clamp(30px, 10vw, 100px);
+  @include letter;
+  -webkit-box-shadow: 13px -5px 20px -4px rgba(232, 178, 13, 0.58);
+  -moz-box-shadow: 13px -5px 20px -4px rgba(232, 178, 13, 0.58);
+  box-shadow: 13px -5px 20px -4px rgba(232, 178, 13, 0.58);
+}
+
+.header__drop-menu {
+  appearance: none;
+  border: none;
+  background-color: transparent !important;
+  color: white;
+  border-radius: clamp(5px, 3vw, 30px);
+  width: clamp(50px, 20vw, 200px);
+  height: clamp(30px, 10vw, 100px);
+  @include letter;
+  padding: 5px;
+}
+
+.header__drop-menu .header__drop-menu-item {
+  appearance: none;
+  border: 1px solid #fff;
+  background-color: transparent;
+  outline: none;
+}
+
+.dropdown-menu {
+  @include letter;
+}
+
+.dropdown-li {
+  color: white;
+}
+
+.btn-secondary {
+  @include letter;
+  font-size: 17px;
+}
