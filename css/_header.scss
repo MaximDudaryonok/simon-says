@@ -8,7 +8,7 @@
 
 .container {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 
@@ -24,6 +24,12 @@
 .header__menu {
   display: flex;
   gap: 5%;
+}
+
+.header__menu-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .button {
@@ -69,4 +75,14 @@
 .btn-secondary {
   @include letter;
   font-size: 17px;
+}
+.header__information {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start;
+}
+.header__information-level {
+  width: 150px;
+  @include letter;
 }

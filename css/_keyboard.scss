@@ -1,0 +1,22 @@
+.main {
+  margin-top: 5%;
+}
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.keyboard__alpha-row, .keyboard__alpha-row2, .keyboard__alpha-row3, .keyboard__number-row {
+  display: flex;
+  gap: 1%;
+}
+
+.key {
+  font-size: clamp(12px, 4vw, 50px);
+  width: clamp(15px, 10vw, 70px);
+  height: clamp(15px, 10vw, 70px);
+  padding: 0;
+}
