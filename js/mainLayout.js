@@ -84,16 +84,15 @@ const layout = () => {
     arrShuffle.length = 0;
     const rounds = [2, 4, 6, 8, 10];
     let flat = data.flat();
-
-    for (let i = flat.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [flat[i], flat[j]] = [flat[j], flat[i]]; // Swap elements
-    }
     let startIndex = 0;
     rounds.forEach((numElements) => {
-      let roundRes = flat.slice(startIndex, startIndex + numElements);
+      let copy = flat.map((el, i, arr) => {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+        return el;
+      });
+      let roundRes = copy.slice(startIndex, numElements);
       arrShuffle.push(roundRes);
-      startIndex += numElements;
     });
     return arrShuffle;
   };
@@ -123,7 +122,6 @@ const layout = () => {
         shuffle(numbers, keys);
         console.log(arrShuffle);
       }
-      keyboardHandler();
     });
   });
 
@@ -134,6 +132,7 @@ const layout = () => {
     numbers.forEach((key, index) => {
       const keyElement = document.createElement("button");
       keyElement.className = "btn btn-secondary key";
+      keyElement.disabled = true;
       keyElement.setAttribute("data-key", `${key}`);
       keyElement.textContent = key;
       keyboardNumberRow.appendChild(keyElement);
@@ -155,6 +154,7 @@ const layout = () => {
       const keyElement = document.createElement("button");
       keyElement.className = "btn btn-secondary key";
       keyElement.setAttribute("data-key", `${key}`);
+      keyElement.disabled = true;
       keyElement.textContent = key;
       if (index <= 9) {
         keyboardAlphaRow.appendChild(keyElement);
@@ -168,21 +168,67 @@ const layout = () => {
   }
 
   //startGame
+  function timer(seconds, data, round, result) {
+    const keys = document.querySelectorAll(".key");
+    let timeLeft = seconds;
+    const timerInterval = setInterval(() => {
+      if (timeLeft > 0) {
+        gameInfo.textContent = `Type your answer! ${timeLeft} seconds left!`;
+        timeLeft--;
+      } else {
+        clearInterval(timerInterval);
+        keys.forEach((el) => {
+          el.disabled = true;
+        });
+        result = compare(data[round - 1], gameStore);
+        if (result === true && round < 5) {
+          gameInfo.textContent = "All right! Next round!";
+          setTimeout(() => {
+            gameInfo.textContent = "Start!";
+          }, 1000);
+          setTimeout(() => {
+            highlightKeys(data, (round += 1));
+          }, 2000);
+        } else if (result === true && round === 5) {
+          gameInfo.textContent = "Victory!";
+        } else {
+          gameInfo.textContent = "Oops, try again!";
+        }
+      }
+    }, 1000);
+  }
+
+  function compare(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   const startBtn = document.querySelector(".start"),
     gameInfo = document.querySelector(".keyboard__info"),
     infoLevel = document.querySelector(".header__information-level");
+
   startBtn.addEventListener("click", (e) => {
     e.preventDefault();
     console.log(arrShuffle);
     highlightKeys(arrShuffle);
   });
-  const highlightKeys = (data, round = 1, delay = 1500) => {
+
+  const highlightKeys = (data, round = 1, delay = 3000) => {
+    let result = undefined;
     const keys = document.querySelectorAll(".key");
     gameInfo.textContent = "Round: " + round;
     keys.forEach((el) => {
       el.disabled = true;
     });
-    if (round < data.length) {
+    if (round <= data.length) {
+      gameStore.length = 0;
       data[round - 1].forEach((item, index) => {
         setTimeout(() => {
           let arr = Array.from(keys);
@@ -202,39 +248,37 @@ const layout = () => {
         el.classList.remove("highlight");
         el.disabled = false;
       });
+      timer(5 * round, data, round, result);
     }, delay * data[round - 1].length);
   };
-  //keyboard
-  const keyboardHandler = () => {
-    const keyboard = document.querySelector(".keyboard");
-    keyboard.addEventListener("click", (e) => {
-      const keyValue = e.target.getAttribute("data-key");
-      if (keyValue) {
-        console.log(keyValue);
-        e.target.classList.add("highlight");
-        setTimeout(() => e.target.classList.remove("highlight"), 300);
-      }
-    });
-    document.addEventListener("keydown", (e) => {
-      const keys = document.querySelectorAll(".key");
-      const keyValue = e.key.toUpperCase();
-      const keyButton = Array.from(keys).find(
-        (key) => key.getAttribute("data-key") === keyValue
-      );
-      if (keyButton) {
-        handleKeyPress(keyValue);
-        keyButton.classList.add("highlight");
-        setTimeout(() => keyButton.classList.remove("highlight"), 300);
-      }
-    });
-  };
-  const handleKeyPress = (keyValue) => {
-    console.log("Key pressed:", keyValue);
-  };
-  const handler = () =>
-    document.querySelector(".keyboard").addEventListener("click", (e) => {
-      console.log(e);
-    });
-};
 
+  //keyboard
+  let gameStore = [];
+  const keyboardClickHandler = (e) => {
+    const keyValue = e.target.getAttribute("data-key");
+    if (keyValue && !keys[0].disabled) {
+      console.log(keyValue);
+      gameStore.push(keyValue);
+      e.target.classList.add("highlight");
+      setTimeout(() => e.target.classList.remove("highlight"), 300);
+    }
+    return gameStore;
+  };
+  const keyboardPushHandler = (e) => {
+    const keys = document.querySelectorAll(".key");
+    const keyValue = e.key.toUpperCase();
+    const keyButton = Array.from(keys).find(
+      (key) => key.getAttribute("data-key") === keyValue
+    );
+    if (keyButton && !keys[0].disabled) {
+      console.log(keyValue);
+      gameStore.push(keyValue);
+      keyButton.classList.add("highlight");
+      setTimeout(() => keyButton.classList.remove("highlight"), 300);
+    }
+    return gameStore;
+  };
+  document.addEventListener("keyup", keyboardPushHandler);
+  document.addEventListener("click", keyboardClickHandler);
+};
 export { layout };
