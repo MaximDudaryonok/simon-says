@@ -19,6 +19,7 @@ const layout = () => {
     main = document.createElement("main"),
     section = document.createElement("section"),
     keyboardWrapper = document.createElement("div"),
+    keyboardInfo = document.createElement("h2"),
     keyboardContainer = document.createElement("div");
 
   // Set classes
@@ -27,7 +28,7 @@ const layout = () => {
   menuWrapper.className = "header__menu-wrapper";
   informationWrapper.className = "header__information";
   btnMenuContainer.className = "header__menu";
-  buttonStart.className = "btn btn-secondary";
+  buttonStart.className = "btn btn-secondary start";
   dropMenuContainer.className = "dropdown";
   dropMenuBtn.className = "btn btn-secondary dropdown-toggle";
   dropMenuBtn.setAttribute("type", "button");
@@ -38,8 +39,9 @@ const layout = () => {
   main.className = "main";
   logo.className = "header__logo";
   section.className = "keyboard__section";
-  keyboardWrapper.className = "container";
+  keyboardWrapper.className = "container keyboard__container";
   keyboardContainer.className = "keyboard";
+  keyboardInfo.className = "keyboard__info";
   logoImg.className = "header__logo-img";
   logoImg.src = "assets/img/logo.png";
   informationLevel.className = "header__information-level";
@@ -61,6 +63,7 @@ const layout = () => {
   logo.appendChild(logoImg);
   main.appendChild(section);
   section.appendChild(keyboardWrapper);
+  keyboardWrapper.appendChild(keyboardInfo);
 
   // Button configuration
   buttonStart.textContent = "Start";
@@ -74,18 +77,23 @@ const layout = () => {
     dropMenu.appendChild(optionElement);
     optionElement.appendChild(optionElementBtn);
   });
+
   //shuffler
   let arrShuffle = [];
   const shuffle = (...data) => {
     arrShuffle.length = 0;
     const rounds = [2, 4, 6, 8, 10];
     let flat = data.flat();
+
+    for (let i = flat.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [flat[i], flat[j]] = [flat[j], flat[i]]; // Swap elements
+    }
+    let startIndex = 0;
     rounds.forEach((numElements) => {
-      let roundRes = [];
-      for (let i = 0; i < numElements; i++) {
-        roundRes.push(flat[Math.floor(flat.length * Math.random())]);
-      }
+      let roundRes = flat.slice(startIndex, startIndex + numElements);
       arrShuffle.push(roundRes);
+      startIndex += numElements;
     });
     return arrShuffle;
   };
@@ -115,6 +123,7 @@ const layout = () => {
         shuffle(numbers, keys);
         console.log(arrShuffle);
       }
+      keyboardHandler();
     });
   });
 
@@ -125,6 +134,7 @@ const layout = () => {
     numbers.forEach((key, index) => {
       const keyElement = document.createElement("button");
       keyElement.className = "btn btn-secondary key";
+      keyElement.setAttribute("data-key", `${key}`);
       keyElement.textContent = key;
       keyboardNumberRow.appendChild(keyElement);
     });
@@ -144,6 +154,7 @@ const layout = () => {
     keys.forEach((key, index) => {
       const keyElement = document.createElement("button");
       keyElement.className = "btn btn-secondary key";
+      keyElement.setAttribute("data-key", `${key}`);
       keyElement.textContent = key;
       if (index <= 9) {
         keyboardAlphaRow.appendChild(keyElement);
@@ -156,6 +167,70 @@ const layout = () => {
     keyboardWrapper.appendChild(keyboardContainer);
   }
 
+  //startGame
+  const startBtn = document.querySelector(".start"),
+    gameInfo = document.querySelector(".keyboard__info"),
+    infoLevel = document.querySelector(".header__information-level");
+  startBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    console.log(arrShuffle);
+    highlightKeys(arrShuffle);
+  });
+  const highlightKeys = (data, round = 1, delay = 1500) => {
+    const keys = document.querySelectorAll(".key");
+    gameInfo.textContent = "Round: " + round;
+    keys.forEach((el) => {
+      el.disabled = true;
+    });
+    if (round < data.length) {
+      data[round - 1].forEach((item, index) => {
+        setTimeout(() => {
+          let arr = Array.from(keys);
+          arr.forEach((el) => {
+            if (el.textContent === item + "") {
+              el.classList.add("highlight");
+              setTimeout(() => {
+                el.classList.remove("highlight");
+              }, delay);
+            }
+          });
+        }, delay * index);
+      });
+    }
+    setTimeout(() => {
+      keys.forEach((el) => {
+        el.classList.remove("highlight");
+        el.disabled = false;
+      });
+    }, delay * data[round - 1].length);
+  };
+  //keyboard
+  const keyboardHandler = () => {
+    const keyboard = document.querySelector(".keyboard");
+    keyboard.addEventListener("click", (e) => {
+      const keyValue = e.target.getAttribute("data-key");
+      if (keyValue) {
+        console.log(keyValue);
+        e.target.classList.add("highlight");
+        setTimeout(() => e.target.classList.remove("highlight"), 300);
+      }
+    });
+    document.addEventListener("keydown", (e) => {
+      const keys = document.querySelectorAll(".key");
+      const keyValue = e.key.toUpperCase();
+      const keyButton = Array.from(keys).find(
+        (key) => key.getAttribute("data-key") === keyValue
+      );
+      if (keyButton) {
+        handleKeyPress(keyValue);
+        keyButton.classList.add("highlight");
+        setTimeout(() => keyButton.classList.remove("highlight"), 300);
+      }
+    });
+  };
+  const handleKeyPress = (keyValue) => {
+    console.log("Key pressed:", keyValue);
+  };
   const handler = () =>
     document.querySelector(".keyboard").addEventListener("click", (e) => {
       console.log(e);

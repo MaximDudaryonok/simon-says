@@ -44,7 +44,10 @@
   -moz-box-shadow: 13px -5px 20px -4px rgba(232, 178, 13, 0.58);
   box-shadow: 13px -5px 20px -4px rgba(232, 178, 13, 0.58);
 }
-
+.highlight {
+  background-color: rgba(232, 178, 13, 0.58);
+  color: black;
+}
 .header__drop-menu {
   appearance: none;
   border: none;

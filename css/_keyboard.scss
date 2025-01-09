@@ -1,5 +1,9 @@
 .main {
-  margin-top: 5%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin-bottom: 15%;
 }
 
 .keyboard {
@@ -19,4 +23,26 @@
   width: clamp(15px, 10vw, 70px);
   height: clamp(15px, 10vw, 70px);
   padding: 0;
+}
+
+/* Base styles */
+#startButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.key:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.keyboard__info {
+  @include letter;
+}
+.keyboard__container {
+  justify-content: space-between;
+  flex-direction: column;
 }
