@@ -7,6 +7,7 @@ const layout = () => {
     menuWrapper = document.createElement("div"),
     informationWrapper = document.createElement("div"),
     informationLevel = document.createElement("div"),
+    informationRound = document.createElement("h3"),
     informationDiff = document.createElement("div"),
     logo = document.createElement("h1"),
     logoImg = document.createElement("img"),
@@ -15,6 +16,7 @@ const layout = () => {
     dropMenuContainer = document.createElement("div"),
     dropMenuBtn = document.createElement("button"),
     dropMenu = document.createElement("ul"),
+    repeatBtn = document.createElement("button"),
     options = ["Easy", "Medium", "Hard"],
     main = document.createElement("main"),
     section = document.createElement("section"),
@@ -27,6 +29,7 @@ const layout = () => {
   wrapper.className = "container";
   menuWrapper.className = "header__menu-wrapper";
   informationWrapper.className = "header__information";
+  informationDiff.className = "header__information-round";
   btnMenuContainer.className = "header__menu";
   buttonStart.className = "btn btn-secondary start";
   dropMenuContainer.className = "dropdown";
@@ -67,6 +70,7 @@ const layout = () => {
 
   // Button configuration
   buttonStart.textContent = "Start";
+  informationDiff.textContent = "";
   // drop-menu
   options.forEach((option) => {
     const optionElement = document.createElement("li");
@@ -84,19 +88,21 @@ const layout = () => {
     arrShuffle.length = 0;
     const rounds = [2, 4, 6, 8, 10];
     let flat = data.flat();
+    const fisherYatesShuffle = (array) => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    };
     let startIndex = 0;
     rounds.forEach((numElements) => {
-      let copy = flat.map((el, i, arr) => {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-        return el;
-      });
+      let copy = fisherYatesShuffle([...flat]);
       let roundRes = copy.slice(startIndex, numElements);
       arrShuffle.push(roundRes);
     });
     return arrShuffle;
   };
-
   //make keyboard
   const difficultyBtns = document.querySelectorAll(".dropdown-item");
   difficultyBtns.forEach((btn) => {
@@ -106,24 +112,24 @@ const layout = () => {
       if (e.target.textContent === "Easy") {
         informationLevel.textContent = "Easy";
         createKeyboardNum(numbers);
-        shuffle(numbers);
-        console.log(arrShuffle);
       }
       if (e.target.textContent === "Medium") {
         informationLevel.textContent = "Medium";
         createKeyboardAlph(keys);
-        shuffle(keys);
-        console.log(arrShuffle);
       }
       if (e.target.textContent === "Hard") {
         informationLevel.textContent = "Hard";
         createKeyboardNum(numbers);
         createKeyboardAlph(keys);
-        shuffle(numbers, keys);
-        console.log(arrShuffle);
       }
     });
   });
+
+  function easyClick() {
+    difficultyBtns[0].click();
+  }
+
+  easyClick();
 
   function createKeyboardNum(numbers) {
     const keyboardNumberRow = document.createElement("div");
@@ -167,69 +173,172 @@ const layout = () => {
     keyboardWrapper.appendChild(keyboardContainer);
   }
 
-  //startGame
-  function timer(seconds, data, round, result) {
-    const keys = document.querySelectorAll(".key");
-    let timeLeft = seconds;
-    const timerInterval = setInterval(() => {
-      if (timeLeft > 0) {
-        gameInfo.textContent = `Type your answer! ${timeLeft} seconds left!`;
-        timeLeft--;
-      } else {
-        clearInterval(timerInterval);
-        keys.forEach((el) => {
-          el.disabled = true;
-        });
-        result = compare(data[round - 1], gameStore);
-        if (result === true && round < 5) {
-          gameInfo.textContent = "All right! Next round!";
-          setTimeout(() => {
-            gameInfo.textContent = "Start!";
-          }, 1000);
-          setTimeout(() => {
-            highlightKeys(data, (round += 1));
-          }, 2000);
-        } else if (result === true && round === 5) {
-          gameInfo.textContent = "Victory!";
-        } else {
-          gameInfo.textContent = "Oops, try again!";
-        }
-      }
-    }, 1000);
-  }
-
-  function compare(arr1, arr2) {
-    if (arr1.length !== arr2.length) {
-      return false;
-    }
-    for (let i = 0; i < arr1.length; i++) {
-      if (arr1[i] !== arr2[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   const startBtn = document.querySelector(".start"),
     gameInfo = document.querySelector(".keyboard__info"),
+    dropdownContainer = document.querySelector(".dropdown"),
     infoLevel = document.querySelector(".header__information-level");
+
+  function startNewGameBtn() {
+    if (startBtn.textContent === "Start") {
+      startBtn.classList.add("new");
+      dropdownContainer.classList.add("inactive");
+      dropMenuBtn.classList.add("inactive");
+      dropMenu.classList.add("inactive");
+      startBtn.textContent = "New game";
+      repeatBtn.className = "btn btn-secondary repeat";
+      repeatBtn.textContent = "Repeat the sequence";
+      btnMenuContainer.appendChild(repeatBtn);
+    } else {
+      repeatBtn.classList.add("inactive");
+      dropdownContainer.classList.remove("inactive");
+      dropMenuBtn.classList.remove("inactive");
+      dropMenu.classList.remove("inactive");
+      startBtn.textContent = "Start";
+      startBtn.classList.remove("new");
+      dropMenu.classList.remove("inactive");
+      informationDiff.textContent = "";
+      keyboardInfo.textContent = "";
+    }
+  }
+
+  let round = 1;
+  let count = 0;
+  let roundRepeat = 1;
+
+  function repeatLogic() {
+    if (count === 0) {
+      switch (roundRepeat) {
+        case 1:
+          highlightKeys(arrShuffle, (round = 1));
+          console.log("1");
+          break;
+        case 2:
+          highlightKeys(arrShuffle, (round = 2));
+          console.log("2");
+          break;
+        case 3:
+          highlightKeys(arrShuffle, (round = 3));
+          console.log("3");
+          break;
+        case 4:
+          highlightKeys(arrShuffle, (round = 4));
+          console.log("4");
+          break;
+        case 5:
+          highlightKeys(arrShuffle, (round = 5));
+          console.log("5");
+          break;
+        default:
+          console.log("Invalid roundRepeat value");
+      }
+      count++;
+    }
+  }
 
   startBtn.addEventListener("click", (e) => {
     e.preventDefault();
+    startNewGameBtn();
+    roundRepeat = 1;
+    if (informationLevel.textContent === "Medium") {
+      shuffle(keys);
+    } else if (informationLevel.textContent === "Easy") {
+      shuffle(numbers);
+    } else if (informationLevel.textContent === "Hard") {
+      shuffle(keys, numbers);
+    }
     console.log(arrShuffle);
-    highlightKeys(arrShuffle);
+    if (startBtn.classList.contains("new")) {
+      highlightKeys(arrShuffle);
+      repeatBtn.addEventListener("click", repeatLogic);
+    } else {
+      const keys = document.querySelectorAll(".key");
+      keys.forEach((el) => {
+        el.disabled = true;
+      });
+      count = 0;
+      repeatBtn.removeEventListener("click", repeatLogic);
+    }
   });
 
-  const highlightKeys = (data, round = 1, delay = 3000) => {
-    let result = undefined;
+  let index = 0;
+  const keyboardClickHandler = (arrShuffle, round) => (e) => {
+    const keyValue = e.target.getAttribute("data-key");
+    if (keyValue && !keys[0].disabled) {
+      //console.log(keyValue);
+      e.target.classList.add("highlight");
+      setTimeout(() => e.target.classList.remove("highlight"), 300);
+    }
+  };
+
+  const keyboardPushHandler = (arrShuffle, round) => (e) => {
     const keys = document.querySelectorAll(".key");
+    const keyValue = e.key.toUpperCase();
+    keys.forEach((el) => {
+      el.disabled = false;
+    });
+    const keyButton = Array.from(keys).find(
+      (key) => key.getAttribute("data-key") === keyValue
+    );
+    if (keyButton && !keys[0].disabled) {
+      //console.log(keyValue);
+      keyButton.classList.add("highlight");
+      setTimeout(() => keyButton.classList.remove("highlight"), 300);
+      if (keyValue === arrShuffle[round - 1][index]) {
+        console.log(
+          "ind " + index + " and " + " arr" + arrShuffle[round - 1][index]
+        );
+        let sentence = (gameInfo.textContent = "Your answer: " + keyValue);
+        index += 1;
+      } else {
+        keys.forEach((el) => {
+          el.disabled = true;
+        });
+        if (count === 1) {
+          gameInfo.textContent = "You lose..";
+        } else {
+          gameInfo.textContent = "Try again.. Use repeat the sequence!";
+        }
+        index = 0;
+        document.removeEventListener("keyup", handler);
+      }
+      if (index === arrShuffle[round - 1].length) {
+        index = 0;
+        document.removeEventListener("keyup", handler);
+        keys.forEach((el) => {
+          el.disabled = true;
+        });
+        if (round === 5) {
+          gameInfo.textContent = "You Win!";
+        }
+        if (round < 5) {
+          setTimeout(() => {
+            gameInfo.textContent = "Next Round!";
+          }, 500);
+          setTimeout(() => {
+            gameInfo.textContent = "Start!";
+          }, 1500);
+          setTimeout(() => {
+            highlightKeys(arrShuffle, (round += 1));
+            roundRepeat += 1;
+          }, 2000);
+        }
+      }
+    }
+  };
+
+  const handler = keyboardPushHandler(arrShuffle, round);
+
+  const highlightKeys = (arrShuffle, round = 1, delay = 1000) => {
+    const keys = document.querySelectorAll(".key");
+    count = 0;
+    informationDiff.textContent = `Round: ${round}!`;
     gameInfo.textContent = "Round: " + round;
     keys.forEach((el) => {
       el.disabled = true;
     });
-    if (round <= data.length) {
-      gameStore.length = 0;
-      data[round - 1].forEach((item, index) => {
+    if (round <= arrShuffle.length) {
+      document.removeEventListener("keyup", handler);
+      arrShuffle[round - 1].forEach((item, index) => {
         setTimeout(() => {
           let arr = Array.from(keys);
           arr.forEach((el) => {
@@ -242,43 +351,21 @@ const layout = () => {
           });
         }, delay * index);
       });
+      setTimeout(() => {
+        document.addEventListener("keyup", handler);
+      }, delay * round * 2 + 100);
+    } else if (round > arrShuffle.length) {
+      keys.forEach((el) => {
+        el.classList.remove("highlight");
+        el.disabled = true;
+      });
     }
     setTimeout(() => {
       keys.forEach((el) => {
         el.classList.remove("highlight");
-        el.disabled = false;
+        el.disabled = true;
       });
-      timer(5 * round, data, round, result);
-    }, delay * data[round - 1].length);
+    }, delay * arrShuffle[round - 1].length);
   };
-
-  //keyboard
-  let gameStore = [];
-  const keyboardClickHandler = (e) => {
-    const keyValue = e.target.getAttribute("data-key");
-    if (keyValue && !keys[0].disabled) {
-      console.log(keyValue);
-      gameStore.push(keyValue);
-      e.target.classList.add("highlight");
-      setTimeout(() => e.target.classList.remove("highlight"), 300);
-    }
-    return gameStore;
-  };
-  const keyboardPushHandler = (e) => {
-    const keys = document.querySelectorAll(".key");
-    const keyValue = e.key.toUpperCase();
-    const keyButton = Array.from(keys).find(
-      (key) => key.getAttribute("data-key") === keyValue
-    );
-    if (keyButton && !keys[0].disabled) {
-      console.log(keyValue);
-      gameStore.push(keyValue);
-      keyButton.classList.add("highlight");
-      setTimeout(() => keyButton.classList.remove("highlight"), 300);
-    }
-    return gameStore;
-  };
-  document.addEventListener("keyup", keyboardPushHandler);
-  document.addEventListener("click", keyboardClickHandler);
 };
 export { layout };

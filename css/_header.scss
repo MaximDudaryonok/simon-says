@@ -17,13 +17,13 @@
 }
 
 .header__logo-img {
-  max-width: 300px;
+  max-width: 250px;
   max-height: 180px;
 }
 
 .header__menu {
   display: flex;
-  gap: 5%;
+  gap: 10px;
 }
 
 .header__menu-wrapper {
@@ -44,10 +44,12 @@
   -moz-box-shadow: 13px -5px 20px -4px rgba(232, 178, 13, 0.58);
   box-shadow: 13px -5px 20px -4px rgba(232, 178, 13, 0.58);
 }
+
 .highlight {
   background-color: rgba(232, 178, 13, 0.58);
   color: black;
 }
+
 .header__drop-menu {
   appearance: none;
   border: none;
@@ -79,13 +81,30 @@
   @include letter;
   font-size: 17px;
 }
+
 .header__information {
   display: flex;
   flex-direction: column;
   height: 100%;
   justify-content: flex-start;
 }
+
 .header__information-level {
-  width: 150px;
+  width: clamp(15px, 10vw, 150px);
   @include letter;
+}
+
+.inactive {
+  display: none;
+}
+
+.header__information-round {
+  @include letter;
+  font-size: clamp(8px, 3vw, 15px);
+}
+
+.new, .start, .dropdown-toggle, .repeat {
+  padding: 4px;
+  width: 164px;
+  height: 50px;
 }
