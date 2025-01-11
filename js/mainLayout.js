@@ -4,7 +4,7 @@ const layout = () => {
   const body = document.body,
     header = document.createElement("header"),
     wrapper = document.createElement("div"),
-    menuWrapper = document.createElement("div"),
+    infoLogoContainer = document.createElement("div"),
     informationWrapper = document.createElement("div"),
     informationLevel = document.createElement("div"),
     informationRound = document.createElement("h3"),
@@ -27,7 +27,7 @@ const layout = () => {
   // Set classes
   header.className = "header";
   wrapper.className = "container";
-  menuWrapper.className = "header__menu-wrapper";
+  infoLogoContainer.className = "header__info-logo-container";
   informationWrapper.className = "header__information";
   informationDiff.className = "header__information-round";
   btnMenuContainer.className = "header__menu";
@@ -53,17 +53,17 @@ const layout = () => {
   body.appendChild(header);
   body.appendChild(main);
   header.appendChild(wrapper);
-  wrapper.appendChild(menuWrapper);
-  wrapper.appendChild(informationWrapper);
+  wrapper.appendChild(infoLogoContainer);
+  infoLogoContainer.appendChild(logo);
+  logo.appendChild(logoImg);
+  infoLogoContainer.appendChild(informationWrapper);
+  wrapper.appendChild(btnMenuContainer);
   informationWrapper.appendChild(informationLevel);
   informationWrapper.appendChild(informationDiff);
-  menuWrapper.appendChild(logo);
-  menuWrapper.appendChild(btnMenuContainer);
   btnMenuContainer.appendChild(buttonStart);
   btnMenuContainer.appendChild(dropMenuContainer);
   dropMenuContainer.appendChild(dropMenuBtn);
   dropMenuContainer.appendChild(dropMenu);
-  logo.appendChild(logoImg);
   main.appendChild(section);
   section.appendChild(keyboardWrapper);
   keyboardWrapper.appendChild(keyboardInfo);
@@ -124,6 +124,7 @@ const layout = () => {
       }
     });
   });
+  keyboardInfo.textContent = "   ";
 
   function easyClick() {
     difficultyBtns[0].click();
@@ -210,23 +211,18 @@ const layout = () => {
       switch (roundRepeat) {
         case 1:
           highlightKeys(arrShuffle, (round = 1));
-          console.log("1");
           break;
         case 2:
           highlightKeys(arrShuffle, (round = 2));
-          console.log("2");
           break;
         case 3:
           highlightKeys(arrShuffle, (round = 3));
-          console.log("3");
           break;
         case 4:
           highlightKeys(arrShuffle, (round = 4));
-          console.log("4");
           break;
         case 5:
           highlightKeys(arrShuffle, (round = 5));
-          console.log("5");
           break;
         default:
           console.log("Invalid roundRepeat value");
@@ -261,6 +257,7 @@ const layout = () => {
   });
 
   let index = 0;
+  let userInput = [];
   const keyboardClickHandler = (arrShuffle, round) => (e) => {
     const keyValue = e.target.getAttribute("data-key");
     if (keyValue && !keys[0].disabled) {
@@ -284,10 +281,13 @@ const layout = () => {
       keyButton.classList.add("highlight");
       setTimeout(() => keyButton.classList.remove("highlight"), 300);
       if (keyValue === arrShuffle[round - 1][index]) {
-        console.log(
-          "ind " + index + " and " + " arr" + arrShuffle[round - 1][index]
-        );
-        let sentence = (gameInfo.textContent = "Your answer: " + keyValue);
+        /*console.log(
+                                                                  "ind " + index + " and " + " arr" + arrShuffle[round - 1][index]
+                                                                );*/
+        userInput.push(keyValue);
+        console.log(userInput);
+        let userAnswer = userInput.join("");
+        let sentence = (gameInfo.textContent = "Your answer: " + userAnswer);
         index += 1;
       } else {
         keys.forEach((el) => {
@@ -295,8 +295,10 @@ const layout = () => {
         });
         if (count === 1) {
           gameInfo.textContent = "You lose..";
+          userInput.length = 0;
         } else {
           gameInfo.textContent = "Try again.. Use repeat the sequence!";
+          userInput.length = 0;
         }
         index = 0;
         document.removeEventListener("keyup", handler);
@@ -309,14 +311,16 @@ const layout = () => {
         });
         if (round === 5) {
           gameInfo.textContent = "You Win!";
+          userInput.length = 0;
         }
         if (round < 5) {
           setTimeout(() => {
             gameInfo.textContent = "Next Round!";
-          }, 500);
+          }, 1000);
           setTimeout(() => {
             gameInfo.textContent = "Start!";
           }, 1500);
+          userInput.length = 0;
           setTimeout(() => {
             highlightKeys(arrShuffle, (round += 1));
             roundRepeat += 1;
