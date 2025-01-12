@@ -139,12 +139,17 @@ body {
 .main {
   width: 100%;
   position: absolute;
-  top: 60%;
+  top: 50%;
   height: fit-content;
   display: flex;
   justify-content: center;
 }
 
+@media screen and (min-device-width: 481px) and (max-device-width: 768px) {
+  .main {
+    top: 35%;
+  }
+}
 .keyboard__section {
   width: 100%;
 }
