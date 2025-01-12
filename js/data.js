@@ -1,5 +1,5 @@
 const numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-const keys = [
+const alphabet = [
   "Q",
   "W",
   "E",
@@ -27,4 +27,4 @@ const keys = [
   "N",
   "M",
 ];
-export { numbers, keys };
+export { numbers, alphabet };

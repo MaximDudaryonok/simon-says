@@ -1,4 +1,4 @@
-import { keys, numbers } from "./data.js";
+import { alphabet, numbers } from "./data.js";
 
 const layout = () => {
   const body = document.body,
@@ -115,12 +115,12 @@ const layout = () => {
       }
       if (e.target.textContent === "Medium") {
         informationLevel.textContent = "Medium";
-        createKeyboardAlph(keys);
+        createKeyboardAlph(alphabet);
       }
       if (e.target.textContent === "Hard") {
         informationLevel.textContent = "Hard";
         createKeyboardNum(numbers);
-        createKeyboardAlph(keys);
+        createKeyboardAlph(alphabet);
       }
     });
   });
@@ -147,7 +147,7 @@ const layout = () => {
     keyboardWrapper.appendChild(keyboardContainer);
   }
 
-  function createKeyboardAlph(keys) {
+  function createKeyboardAlph(alphabet) {
     const keyboardAlphaRow = document.createElement("div"),
       keyboardAlphaRow2 = document.createElement("div"),
       keyboardAlphaRow3 = document.createElement("div");
@@ -157,7 +157,7 @@ const layout = () => {
     keyboardContainer.appendChild(keyboardAlphaRow);
     keyboardContainer.appendChild(keyboardAlphaRow2);
     keyboardContainer.appendChild(keyboardAlphaRow3);
-    keys.forEach((key, index) => {
+    alphabet.forEach((key, index) => {
       const keyElement = document.createElement("button");
       keyElement.className = "btn btn-secondary key";
       keyElement.setAttribute("data-key", `${key}`);
@@ -246,17 +246,16 @@ const layout = () => {
     startNewGameBtn();
     resetGame();
     if (informationLevel.textContent === "Medium") {
-      shuffle(keys);
+      shuffle(alphabet);
     } else if (informationLevel.textContent === "Easy") {
       shuffle(numbers);
     } else if (informationLevel.textContent === "Hard") {
-      shuffle(keys, numbers);
+      shuffle(alphabet, numbers);
     }
     console.log(arrShuffle);
     if (startBtn.classList.contains("new")) {
       highlightKeys(arrShuffle, (round = 1));
       repeatBtn.addEventListener("click", repeatLogic);
-      document.querySelector(".start").removeEventListener("click", remove);
     } else {
       const keys = document.querySelectorAll(".key");
       keys.forEach((el) => {
@@ -269,25 +268,28 @@ const layout = () => {
   let index = 0;
   let userInput = [];
   const keyboardClickHandler = (arrShuffle, round) => (e) => {
+    const keys = document.querySelectorAll(".key");
     const keyValue = e.target.getAttribute("data-key");
-    if (keyButton && !keys[0].disabled) {
-      //console.log(keyValue);
-      keyButton.classList.add("highlight");
-      setTimeout(() => keyButton.classList.remove("highlight"), 300);
+    if (keyValue && !keys[0].disabled) {
+      console.log(e.target);
+      e.target.classList.add("highlight");
+      setTimeout(() => e.target.classList.remove("highlight"), 300);
       if (keyValue === arrShuffle[round - 1][index]) {
         userInput.push(keyValue);
-        console.log(userInput);
+        console.log(`round ${round}`);
         let userAnswer = userInput.join("");
         let sentence = (gameInfo.textContent = "Your answer: " + userAnswer);
         index += 1;
       } else {
+        console.log("this");
         keys.forEach((el) => {
           el.disabled = true;
         });
         if (count === 1) {
-          round = 1;
+          document.removeEventListener("keyup", handler);
           gameInfo.textContent = "You lose..";
           userInput.length = 0;
+          return (round = 1);
         } else {
           gameInfo.textContent = "Try again.. Use repeat the sequence!";
           userInput.length = 0;
@@ -302,9 +304,10 @@ const layout = () => {
           el.disabled = true;
         });
         if (round === 5) {
+          count = 1;
           gameInfo.textContent = "You Win!";
           userInput.length = 0;
-          round = 1;
+          return (round = 1);
         }
         if (round < 5) {
           setTimeout(() => {
@@ -321,9 +324,6 @@ const layout = () => {
         }
       }
     }
-  };
-  const remove = function removeListener() {
-    return (round = 1);
   };
   const keyboardPushHandler = (arrShuffle, round) => (e) => {
     if (round === 1) {
@@ -354,13 +354,14 @@ const layout = () => {
         let sentence = (gameInfo.textContent = "Your answer: " + userAnswer);
         index += 1;
       } else {
+        console.log("this");
         keys.forEach((el) => {
           el.disabled = true;
         });
         if (count === 1) {
+          document.removeEventListener("keyup", handler);
           gameInfo.textContent = "You lose..";
           userInput.length = 0;
-          document.querySelector(".new").removeEventListener("click", remove);
           return (round = 1);
         } else {
           gameInfo.textContent = "Try again.. Use repeat the sequence!";
@@ -376,9 +377,9 @@ const layout = () => {
           el.disabled = true;
         });
         if (round === 5) {
+          count = 1;
           gameInfo.textContent = "You Win!";
           userInput.length = 0;
-          document.querySelector(".new").removeEventListener("click", remove);
           return (round = 1);
         }
         if (round < 5) {
@@ -399,6 +400,7 @@ const layout = () => {
   };
 
   const handler = keyboardPushHandler(arrShuffle, (round = 1));
+  const handlerClick = keyboardClickHandler(arrShuffle, (round = 1));
 
   const highlightKeys = (arrShuffle, round, delay = 1500) => {
     const keys = document.querySelectorAll(".key");
@@ -426,8 +428,12 @@ const layout = () => {
         }, delay * index);
       });
       setTimeout(() => {
+        keys.forEach((el) => {
+          el.disabled = false;
+        });
         repeatStatus = true;
         document.addEventListener("keyup", handler);
+        document.addEventListener("click", handlerClick);
       }, delay * round * 2 + 100);
     } else if (round > arrShuffle.length) {
       keys.forEach((el) => {
