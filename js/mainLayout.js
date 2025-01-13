@@ -7,7 +7,6 @@ const layout = () => {
     infoLogoContainer = document.createElement("div"),
     informationWrapper = document.createElement("div"),
     informationLevel = document.createElement("div"),
-    informationRound = document.createElement("h3"),
     informationDiff = document.createElement("div"),
     logo = document.createElement("h1"),
     logoImg = document.createElement("img"),
@@ -48,6 +47,7 @@ const layout = () => {
   keyboardInfo.className = "keyboard__info";
   logoImg.className = "header__logo-img";
   logoImg.src = "assets/img/logo.png";
+  logoImg.alt = "Simon Says";
   informationLevel.className = "header__information-level";
 
   // Append elements
@@ -104,6 +104,7 @@ const layout = () => {
     });
     return arrShuffle;
   };
+
   //make keyboard
   const difficultyBtns = document.querySelectorAll(".dropdown-item");
   difficultyBtns.forEach((btn) => {
@@ -127,6 +128,7 @@ const layout = () => {
   });
   keyboardInfo.textContent = "   ";
 
+  //preselect option
   function easyClick() {
     difficultyBtns[0].click();
   }
@@ -137,7 +139,7 @@ const layout = () => {
     const keyboardNumberRow = document.createElement("div");
     keyboardNumberRow.className = "keyboard__number-row";
     keyboardContainer.appendChild(keyboardNumberRow);
-    numbers.forEach((key, index) => {
+    numbers.forEach((key) => {
       const keyElement = document.createElement("button");
       keyElement.className = "btn btn-secondary key";
       keyElement.classList.add("no-hover");
@@ -175,13 +177,13 @@ const layout = () => {
     keyboardWrapper.appendChild(keyboardContainer);
   }
 
+  //startBtn
   const startBtn = document.querySelector(".start"),
     gameInfo = document.querySelector(".keyboard__info"),
-    dropdownContainer = document.querySelector(".dropdown"),
-    infoLevel = document.querySelector(".header__information-level");
-
+    dropdownContainer = document.querySelector(".dropdown");
   gameInfo.textContent = "Choose difficulty and let`s start!";
 
+  //btnSwitcher from 'start' to 'new'
   function startNewGameBtn() {
     if (startBtn.textContent === "Start") {
       startBtn.classList.add("new");
@@ -208,10 +210,14 @@ const layout = () => {
     }
   }
 
+  // variables for logic
   let round = 1,
     count = 0,
     roundRepeat = 1,
-    repeatStatus = false;
+    repeatStatus = false,
+    index = 0,
+    userInput = [];
+
   const resetGame = () => {
     round = 1;
     index = 0;
@@ -252,6 +258,7 @@ const layout = () => {
     }
   }
 
+  //startBtn eventListener
   const startHandler = (e) => {
     e.preventDefault();
     startNewGameBtn();
@@ -274,11 +281,9 @@ const layout = () => {
       repeatBtn.removeEventListener("click", repeatLogic);
     }
   };
-
   startBtn.addEventListener("click", startHandler);
 
-  let index = 0;
-  let userInput = [];
+  //game push and click event listeners
   const keyboardClickHandler = (arrShuffle) => (e) => {
     const keys = document.querySelectorAll(".key");
     const keyValue = e.target.getAttribute("data-key");
@@ -334,21 +339,21 @@ const layout = () => {
           nextBtn.classList.remove("inactive");
           setTimeout(() => {
             gameInfo.textContent = "Start next round!";
-          }, 1000);
+          }, 300);
           nextBtn.addEventListener(
             "click",
             () => {
               repeatBtn.classList.remove("no-hover");
               setTimeout(() => {
                 gameInfo.textContent = "Be patient!";
-              }, 1000);
+              }, 700);
               userInput.length = 0;
               setTimeout(() => {
                 repeatBtn.classList.remove("inactive");
                 nextBtn.classList.add("inactive");
                 highlightKeys(arrShuffle, (round += 1));
                 roundRepeat += 1;
-              }, 2000);
+              }, 1200);
             },
             { once: true }
           );
@@ -444,11 +449,11 @@ const layout = () => {
       }
     }
   };
-
   const handler = keyboardPushHandler(arrShuffle, (round = 1));
   const handlerClick = keyboardClickHandler(arrShuffle, (round = 1));
 
-  const highlightKeys = (arrShuffle, round, delay = 100) => {
+  // game highlightKeys before user turn
+  const highlightKeys = (arrShuffle, round, delay = 1200) => {
     startBtn.classList.add("no-hover");
     repeatBtn.classList.add("no-hover");
     startBtn.removeEventListener("click", startHandler);
