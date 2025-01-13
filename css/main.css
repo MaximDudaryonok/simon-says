@@ -136,6 +136,12 @@ body {
   height: 50px;
 }
 
+@media screen and (min-device-width: 15px) and (max-device-width: 768px) {
+  .start, .dropdown-toggle {
+    width: clamp(164px, 25vw, 240px);
+    height: clamp(50px, 25vw, 60px);
+  }
+}
 .main {
   width: 100%;
   position: absolute;
@@ -145,7 +151,7 @@ body {
   justify-content: center;
 }
 
-@media screen and (min-device-width: 481px) and (max-device-width: 768px) {
+@media screen and (min-device-width: 15px) and (max-device-width: 768px) {
   .main {
     top: 35%;
   }
@@ -200,6 +206,8 @@ body {
   font-weight: 400;
   font-style: normal;
   font-size: clamp(12px, 4vw, 35px);
+  font-size: clamp(12px, 6vw, 45px);
+  margin-bottom: 2%;
 }
 
 .keyboard__container {

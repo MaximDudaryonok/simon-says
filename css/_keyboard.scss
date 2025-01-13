@@ -7,7 +7,7 @@
   justify-content: center;
 }
 
-@media screen and (min-device-width: 481px) and (max-device-width: 768px) {
+@media screen and (min-device-width: 15px) and (max-device-width: 768px) {
   .main {
     top: 35%;
   }
@@ -60,6 +60,8 @@
 .keyboard__info {
   height: 42px;
   @include letter;
+  font-size: clamp(12px, 6vw, 45px);
+  margin-bottom: 2%;
 }
 
 .keyboard__container {

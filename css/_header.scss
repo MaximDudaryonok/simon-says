@@ -1,6 +1,7 @@
 body {
   position: relative;
 }
+
 .header {
   width: 100%;
   padding-top: 2%;
@@ -115,4 +116,11 @@ body {
   padding: 4px;
   width: 164px;
   height: 50px;
+}
+
+@media screen and (min-device-width: 15px) and (max-device-width: 768px) {
+  .start, .dropdown-toggle {
+    width: clamp(164px, 25vw, 240px);
+    height: clamp(50px, 25vw, 60px);
+  }
 }
