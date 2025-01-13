@@ -1,3 +1,7 @@
+body {
+  position: relative;
+}
+
 .header {
   width: 100%;
   padding-top: 2%;
@@ -139,12 +143,12 @@
   }
 }
 .main {
-  margin-top: 30%;
+  position: absolute;
   width: 100%;
+  top: 40%;
   height: fit-content;
   display: flex;
   justify-content: center;
-  align-self: center;
 }
 
 @media (hover: hover) {

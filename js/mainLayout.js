@@ -226,7 +226,7 @@ const layout = () => {
   function repeatLogic() {
     repeatBtn.classList.add("no-hover");
     if (count === 0 && repeatStatus === true) {
-      console.log(`raundRep: ${roundRepeat}`);
+      //console.log(`roundRep: ${roundRepeat}`);
       switch (roundRepeat) {
         case 1:
           highlightKeys(arrShuffle, (round = 1));
@@ -265,7 +265,6 @@ const layout = () => {
     } else if (informationLevel.textContent === "Hard") {
       arrShuffle = shuffle([...alphabet, ...numbers]);
     }
-    console.log(arrShuffle);
     if (startBtn.classList.contains("new")) {
       highlightKeys(arrShuffle, 1);
     } else {
@@ -284,21 +283,18 @@ const layout = () => {
     const keys = document.querySelectorAll(".key");
     const keyValue = e.target.getAttribute("data-key");
     if (keyValue && !keys[0].classList.contains("no-hover")) {
-      console.log(e.target);
+      //console.log(e.target);
       e.target.classList.add("highlight");
       setTimeout(() => e.target.classList.remove("highlight"), 300);
       if (keyValue + "" === arrShuffle[round - 1][index]) {
-        console.log(`click ${keyValue}`);
+        //console.log(`click ${keyValue}`);
         userInput.push(keyValue);
-        console.log(`round ${round}`);
+        //console.log(`round ${round}`);
         let userAnswer = userInput.join("");
         let sentence = (gameInfo.textContent = "Your answer: " + userAnswer);
         index += 1;
-        console.log(`index ${index}`);
+        //console.log(`index ${index}`);
       } else {
-        console.log(`click ${keyValue}`);
-        console.log(`index ${index}`);
-        console.log(round);
         keys.forEach((el) => {
           el.classList.add("no-hover");
         });
@@ -329,6 +325,8 @@ const layout = () => {
           count = 1;
           gameInfo.textContent = "You Win!";
           userInput.length = 0;
+          repeatBtn.removeEventListener("click", repeatLogic);
+          repeatBtn.classList.add("no-hover");
           return (round = 1);
         }
         if (round < 5) {
@@ -382,16 +380,12 @@ const layout = () => {
       setTimeout(() => keyButton.classList.remove("highlight"), 300);
       if (keyValue + "" === arrShuffle[round - 1][index]) {
         userInput.push(keyValue);
-        console.log(`round ${round}`);
+        //console.log(`round ${round}`);
         let userAnswer = userInput.join("");
         let sentence = (gameInfo.textContent = "Your answer: " + userAnswer);
         index += 1;
-        console.log(`index ${index}`);
+        //console.log(`index ${index}`);
       } else {
-        console.log(`click ${keyValue}`);
-        console.log("this");
-        console.log(`index ${index}`);
-        console.log(round);
         keys.forEach((el) => {
           el.classList.add("no-hover");
         });
@@ -420,6 +414,8 @@ const layout = () => {
           count = 1;
           gameInfo.textContent = "You Win!";
           userInput.length = 0;
+          repeatBtn.removeEventListener("click", repeatLogic);
+          repeatBtn.classList.add("no-hover");
           return (round = 1);
         }
         if (round < 5) {
@@ -452,7 +448,7 @@ const layout = () => {
   const handler = keyboardPushHandler(arrShuffle, (round = 1));
   const handlerClick = keyboardClickHandler(arrShuffle, (round = 1));
 
-  const highlightKeys = (arrShuffle, round, delay = 1000) => {
+  const highlightKeys = (arrShuffle, round, delay = 100) => {
     startBtn.classList.add("no-hover");
     repeatBtn.classList.add("no-hover");
     startBtn.removeEventListener("click", startHandler);
@@ -460,12 +456,13 @@ const layout = () => {
     const keys = document.querySelectorAll(".key");
     count = 0;
     repeatStatus = false;
-    console.log(`high: ${round}`);
+    //console.log(`highlight: ${round}`);
     informationDiff.textContent = `Round: ${round}!`;
     gameInfo.textContent = "Round: " + round;
     keys.forEach((el) => {
       el.classList.remove("no-hover");
     });
+    console.log(arrShuffle[round - 1]);
     if (round <= arrShuffle.length) {
       document.removeEventListener("keyup", handler);
       document.removeEventListener("click", handlerClick);
@@ -486,7 +483,6 @@ const layout = () => {
         keys.forEach((el) => {
           el.classList.remove("no-hover");
         });
-        console.log("Here");
         repeatStatus = true;
         startBtn.classList.remove("no-hover");
         if (repeatStatus === true && count < 1) {

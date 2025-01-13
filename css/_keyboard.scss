@@ -1,32 +1,32 @@
 .main {
-  margin-top: 30%;
+  position: absolute;
   width: 100%;
+  top: 40%;
   height: fit-content;
   display: flex;
   justify-content: center;
-  align-self: center;
 }
 
 @media (hover: hover) {
   .start:hover {
     background-color: rgba(232, 178, 13, 0.58);
-    transition:all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
   .next:hover {
     background-color: rgba(232, 178, 13, 0.58);
-    transition:all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
   .new:hover {
     background-color: rgba(232, 178, 13, 0.58);
-    transition:all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
   .dropdown-toggle:hover {
     background-color: rgba(232, 178, 13, 0.58);
-    transition:all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
   .repeat:hover {
     background-color: rgba(232, 178, 13, 0.58);
-    transition:all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
 }
 
