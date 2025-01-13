@@ -140,7 +140,7 @@ const layout = () => {
     numbers.forEach((key, index) => {
       const keyElement = document.createElement("button");
       keyElement.className = "btn btn-secondary key";
-      keyElement.disabled = true;
+      keyElement.classList.add("no-hover");
       keyElement.setAttribute("data-key", `${key}`);
       keyElement.textContent = key;
       keyboardNumberRow.appendChild(keyElement);
@@ -162,7 +162,7 @@ const layout = () => {
       const keyElement = document.createElement("button");
       keyElement.className = "btn btn-secondary key";
       keyElement.setAttribute("data-key", `${key}`);
-      keyElement.disabled = true;
+      keyElement.classList.add("no-hover");
       keyElement.textContent = key;
       if (index <= 9) {
         keyboardAlphaRow.appendChild(keyElement);
@@ -220,9 +220,11 @@ const layout = () => {
     roundRepeat = 1;
     gameInfo.textContent = "Game is ready to start!";
     nextBtn.classList.add("inactive");
+    repeatBtn.classList.remove("no-hover");
   };
 
   function repeatLogic() {
+    repeatBtn.classList.add("no-hover");
     if (count === 0 && repeatStatus === true) {
       console.log(`raundRep: ${roundRepeat}`);
       switch (roundRepeat) {
@@ -244,44 +246,48 @@ const layout = () => {
         default:
           console.log("Invalid roundRepeat value");
       }
+      userInput = [];
+      index = 0;
       count++;
     }
   }
 
-  startBtn.addEventListener("click", (e) => {
+  const startHandler = (e) => {
     e.preventDefault();
     startNewGameBtn();
     resetGame();
+    let arrShuffle;
+    repeatBtn.classList.add("no-hover");
     if (informationLevel.textContent === "Medium") {
-      shuffle(alphabet);
+      arrShuffle = shuffle(alphabet);
     } else if (informationLevel.textContent === "Easy") {
-      shuffle(numbers);
+      arrShuffle = shuffle(numbers);
     } else if (informationLevel.textContent === "Hard") {
-      shuffle(alphabet, numbers);
+      arrShuffle = shuffle([...alphabet, ...numbers]);
     }
     console.log(arrShuffle);
     if (startBtn.classList.contains("new")) {
-      highlightKeys(arrShuffle, (round = 1));
-      repeatBtn.addEventListener("click", repeatLogic);
+      highlightKeys(arrShuffle, 1);
     } else {
-      const keys = document.querySelectorAll(".key");
-      keys.forEach((el) => {
-        el.disabled = true;
+      document.querySelectorAll(".key").forEach((el) => {
+        el.classList.add("no-hover");
       });
       repeatBtn.removeEventListener("click", repeatLogic);
     }
-  });
+  };
+
+  startBtn.addEventListener("click", startHandler);
 
   let index = 0;
   let userInput = [];
   const keyboardClickHandler = (arrShuffle) => (e) => {
     const keys = document.querySelectorAll(".key");
     const keyValue = e.target.getAttribute("data-key");
-    if (keyValue && !keys[0].disabled) {
+    if (keyValue && !keys[0].classList.contains("no-hover")) {
       console.log(e.target);
       e.target.classList.add("highlight");
       setTimeout(() => e.target.classList.remove("highlight"), 300);
-      if (keyValue === arrShuffle[round - 1][index]) {
+      if (keyValue + "" === arrShuffle[round - 1][index]) {
         console.log(`click ${keyValue}`);
         userInput.push(keyValue);
         console.log(`round ${round}`);
@@ -294,7 +300,7 @@ const layout = () => {
         console.log(`index ${index}`);
         console.log(round);
         keys.forEach((el) => {
-          el.disabled = true;
+          el.classList.add("no-hover");
         });
         if (count === 1) {
           document.removeEventListener("click", handlerClick);
@@ -303,7 +309,9 @@ const layout = () => {
           userInput.length = 0;
           return (round = 1);
         } else {
-          gameInfo.textContent = "Try again.. Use repeat the sequence!";
+          repeatBtn.classList.remove("no-hover");
+          index = 0;
+          gameInfo.textContent = "Use repeat the sequence!";
           userInput.length = 0;
         }
         index = 0;
@@ -315,7 +323,7 @@ const layout = () => {
         document.removeEventListener("click", handlerClick);
         document.removeEventListener("keyup", handler);
         keys.forEach((el) => {
-          el.disabled = true;
+          el.classList.add("no-hover");
         });
         if (round === 5) {
           count = 1;
@@ -332,6 +340,7 @@ const layout = () => {
           nextBtn.addEventListener(
             "click",
             () => {
+              repeatBtn.classList.remove("no-hover");
               setTimeout(() => {
                 gameInfo.textContent = "Be patient!";
               }, 1000);
@@ -362,12 +371,12 @@ const layout = () => {
     const keys = document.querySelectorAll(".key");
     const keyValue = e.key.toUpperCase();
     keys.forEach((el) => {
-      el.disabled = false;
+      el.classList.remove("no-hover");
     });
     const keyButton = Array.from(keys).find(
       (key) => key.getAttribute("data-key") === keyValue
     );
-    if (keyButton && !keys[0].disabled) {
+    if (keyButton && !keys[0].classList.contains("no-hover")) {
       //console.log(keyValue);
       keyButton.classList.add("highlight");
       setTimeout(() => keyButton.classList.remove("highlight"), 300);
@@ -384,7 +393,7 @@ const layout = () => {
         console.log(`index ${index}`);
         console.log(round);
         keys.forEach((el) => {
-          el.disabled = true;
+          el.classList.add("no-hover");
         });
         if (count === 1) {
           document.removeEventListener("keyup", handler);
@@ -405,7 +414,7 @@ const layout = () => {
         document.removeEventListener("keyup", handler);
         document.removeEventListener("click", handlerClick);
         keys.forEach((el) => {
-          el.disabled = true;
+          el.classList.add("no-hover");
         });
         if (round === 5) {
           count = 1;
@@ -443,7 +452,11 @@ const layout = () => {
   const handler = keyboardPushHandler(arrShuffle, (round = 1));
   const handlerClick = keyboardClickHandler(arrShuffle, (round = 1));
 
-  const highlightKeys = (arrShuffle, round, delay = 500) => {
+  const highlightKeys = (arrShuffle, round, delay = 1000) => {
+    startBtn.classList.add("no-hover");
+    repeatBtn.classList.add("no-hover");
+    startBtn.removeEventListener("click", startHandler);
+    repeatBtn.removeEventListener("click", repeatLogic);
     const keys = document.querySelectorAll(".key");
     count = 0;
     repeatStatus = false;
@@ -451,7 +464,7 @@ const layout = () => {
     informationDiff.textContent = `Round: ${round}!`;
     gameInfo.textContent = "Round: " + round;
     keys.forEach((el) => {
-      el.disabled = true;
+      el.classList.remove("no-hover");
     });
     if (round <= arrShuffle.length) {
       document.removeEventListener("keyup", handler);
@@ -471,23 +484,29 @@ const layout = () => {
       });
       setTimeout(() => {
         keys.forEach((el) => {
-          el.disabled = false;
+          el.classList.remove("no-hover");
         });
+        console.log("Here");
         repeatStatus = true;
+        startBtn.classList.remove("no-hover");
+        if (repeatStatus === true && count < 1) {
+          repeatBtn.classList.remove("no-hover");
+          repeatBtn.addEventListener("click", repeatLogic);
+        }
+        startBtn.addEventListener("click", startHandler);
         document.addEventListener("keyup", handler);
         document.addEventListener("click", handlerClick);
       }, delay * round * 2 + 100);
     } else if (round > arrShuffle.length) {
       keys.forEach((el) => {
         el.classList.remove("highlight");
-        el.disabled = true;
+        el.classList.add("no-hover");
         return (round = 1);
       });
     }
     setTimeout(() => {
       keys.forEach((el) => {
         el.classList.remove("highlight");
-        el.disabled = true;
       });
     }, delay * arrShuffle[round - 1].length);
   };
